@@ -1,0 +1,24 @@
+{
+  "name": "deep-learning",
+  "version": "1.0.0",
+  "description": "\"# brain-tumor-detection---deep-learning\"",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx @tailwindcss/cli -i input.css -o styles.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developerHub01/brain-tumor-detection---deep-learning.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/developerHub01/brain-tumor-detection---deep-learning/issues"
+  },
+  "homepage": "https://github.com/developerHub01/brain-tumor-detection---deep-learning#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.4",
+    "tailwindcss": "^4.1.4"
+  }
+}

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brain Tumor Detection</title>
+    <!-- Reference to compiled Tailwind CSS file -->
+    <link href="./styles.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Custom styles that would normally be in your Tailwind config */
+      .scan-line {
+        position: absolute;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+        animation: scan-animation 2s infinite;
+      }
+      @keyframes scan-animation {
+        0% {
+          top: 0;
+        }
+        100% {
+          top: 100%;
+        }
+      }
+      .brain-bg {
+        /* Simple dot pattern background */
+        background-color: #f8fafc;
+        background-image: radial-gradient(#0ea5e9 0.5px, transparent 0.5px);
+        background-size: 15px 15px;
+        background-position: 0 0;
+      }
+      .upload-area {
+        border: 2px dashed #cbd5e1;
+        transition: all 0.3s ease;
+      }
+      .upload-area:hover {
+        border-color: #0ea5e9;
+        background-color: rgba(14, 165, 233, 0.05);
+      }
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        0% {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      .animate-slide-up {
+        animation: slideUp 0.5s ease-in-out;
+      }
+      .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="font-sans bg-gray-50 text-gray-800 min-h-screen brain-bg">
+    <!-- Header -->
+    <header class="bg-white shadow-md">
+      <div
+        class="container mx-auto px-4 py-4 flex items-center justify-between"
+      >
+        <div class="flex items-center">
+          <div
+            class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center mr-2"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+              />
+            </svg>
+          </div>
+          <h1 class="text-xl font-bold text-blue-600">Brain Tumor Detection</h1>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <div class="max-w-5xl mx-auto">
+        <!-- Introduction -->
+        <div class="text-center mb-8 animate-slide-up">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3">
+            MRI Brain Scan Analysis
+          </h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            Upload a brain MRI scan to detect the presence of a tumor using our
+            deep learning model. Get instant results with confidence scores and
+            visualization.
+          </p>
+        </div>
+
+        <!-- Main Application -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in">
+          <!-- Upload Section -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6">
+              <h3
+                class="text-lg font-medium text-gray-800 mb-4 flex items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-blue-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.88A5 5 0 0115.999 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                Upload MRI Scan
+              </h3>
+
+              <div
+                id="upload-area"
+                class="upload-area rounded-lg p-8 flex flex-col items-center justify-center cursor-pointer"
+              >
+                <div
+                  class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-4"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-8 w-8 text-blue-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                </div>
+                <h4 class="text-lg font-medium text-gray-700 mb-2">
+                  Drag & Drop Your MRI Scan
+                </h4>
+                <p class="text-gray-500 text-center mb-4">
+                  Supported formats: JPG, PNG, DICOM (Max size: 10MB)
+                </p>
+                <label
+                  for="file-upload"
+                  class="px-6 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors duration-300 cursor-pointer"
+                >
+                  Browse Files
+                </label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                />
+              </div>
+
+              <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                <h4 class="font-medium text-gray-700 mb-2 flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-1 text-blue-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Scan Requirements
+                </h4>
+                <ul class="text-sm text-gray-600 space-y-1">
+                  <li class="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1 text-blue-500 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    T1 or T2-weighted MRI scans
+                  </li>
+                  <li class="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1 text-blue-500 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Axial view (horizontal plane)
+                  </li>
+                  <li class="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1 text-blue-500 mt-0.5 flex-shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Clear images without artifacts
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Preview Section (Hidden by default, shown when image is selected) -->
+              <div id="preview-section" class="mt-6 hidden">
+                <h4 class="font-medium text-gray-700 mb-2">Scan Preview</h4>
+                <div class="relative bg-black rounded-lg overflow-hidden">
+                  <img
+                    id="image-preview"
+                    src="#"
+                    alt="Brain MRI Scan Preview"
+                    class="w-full h-auto"
+                  />
+                </div>
+                <div class="mt-4 flex space-x-3">
+                  <button
+                    id="cancel-btn"
+                    class="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors duration-300 flex-1"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    id="analyze-btn"
+                    class="px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors duration-300 flex-1 flex items-center justify-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Analyze Scan
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Section -->
+          <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6">
+              <h3
+                class="text-lg font-medium text-gray-800 mb-4 flex items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-blue-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+                Analysis Results
+              </h3>
+
+              <!-- Initial State (No Image) -->
+              <div
+                id="initial-state"
+                class="flex flex-col items-center justify-center h-64 text-center p-6"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-16 w-16 text-gray-300 mb-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                  />
+                </svg>
+                <h4 class="text-lg font-medium text-gray-700 mb-2">
+                  No Scan Analyzed Yet
+                </h4>
+                <p class="text-gray-500">
+                  Upload a brain MRI scan and click "Analyze Scan" to see the
+                  results here.
+                </p>
+              </div>
+
+              <!-- Loading State (Hidden by default) -->
+              <div id="loading-state" class="hidden">
+                <div
+                  class="flex flex-col items-center justify-center h-64 text-center p-6"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-16 w-16 text-blue-400 mb-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  <h4 class="text-lg font-medium text-gray-700 mb-2">
+                    Analyzing Scan
+                  </h4>
+                  <p class="text-gray-500">
+                    Our deep learning model is processing your scan. This may
+                    take a few seconds...
+                  </p>
+                  <div
+                    class="w-full max-w-xs bg-gray-200 rounded-full h-2.5 mt-4"
+                  >
+                    <div
+                      class="bg-blue-500 h-2.5 rounded-full w-3/4 animate-pulse"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Results State (Hidden by default) -->
+              <div id="results-state" class="hidden">
+                <!-- Scan Comparison -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                  <div class="relative rounded-lg overflow-hidden bg-black">
+                    <img
+                      id="original-scan"
+                      src="#"
+                      alt="Original Brain Scan"
+                      class="w-full h-auto"
+                    />
+                    <div
+                      class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs py-1 px-2"
+                    >
+                      Original Scan
+                    </div>
+                  </div>
+                  <div class="relative rounded-lg overflow-hidden bg-black">
+                    <img
+                      id="analyzed-scan"
+                      src="#"
+                      alt="Analyzed Brain Scan"
+                      class="w-full h-auto"
+                    />
+                    <div
+                      class="absolute bottom-0 left-0 right-0 bg-blue-700 bg-opacity-90 text-white text-xs py-1 px-2 flex justify-between items-center"
+                    >
+                      <span>Tumor Detection</span>
+                      <span id="confidence-value" class="font-bold"
+                        >78.6% Confidence</span
+                      >
+                    </div>
+                    <div
+                      class="absolute top-2 right-2 h-4 w-4 rounded-full bg-red-500 animate-pulse"
+                    ></div>
+                    <div class="scan-line w-full"></div>
+                  </div>
+                </div>
+
+                <!-- Confidence Score -->
+                <div class="space-y-4 mb-6">
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm font-medium text-gray-700"
+                        >Tumor Detection Confidence</span
+                      >
+                      <span
+                        id="confidence-text"
+                        class="text-sm font-bold text-blue-700"
+                        >78.6%</span
+                      >
+                    </div>
+                    <div class="h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        id="confidence-bar"
+                        class="h-full bg-blue-500 rounded-full"
+                        style="width: 78.6%"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Risk Assessment -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                  <h4 class="font-medium text-gray-700 mb-2">
+                    Risk Assessment
+                  </h4>
+                  <div class="flex items-center gap-2 mb-2">
+                    <span>Risk Level:</span>
+                    <span id="risk-level" class="font-bold text-amber-600"
+                      >Moderate</span
+                    >
+                  </div>
+                  <p id="risk-description" class="text-sm text-gray-600">
+                    The scan shows moderate probability of a tumor. Further
+                    examination by a specialist is strongly recommended.
+                  </p>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="text-xs text-gray-500 italic">
+                  Disclaimer: This is an automated analysis and should not
+                  replace professional medical advice. Always consult with a
+                  healthcare provider for proper diagnosis.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- How It Works Section -->
+        <div
+          class="mt-12 bg-white rounded-xl shadow-md overflow-hidden animate-fade-in"
+          style="animation-delay: 200ms"
+        >
+          <div class="p-6">
+            <h3
+              class="text-lg font-medium text-gray-800 mb-4 flex items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              How It Works
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div
+                  class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg mb-3"
+                >
+                  1
+                </div>
+                <h4 class="font-medium text-gray-700 mb-2">Upload Scan</h4>
+                <p class="text-sm text-gray-600">
+                  Upload your brain MRI scan in a supported format. The system
+                  accepts T1 and T2-weighted MRI scans.
+                </p>
+              </div>
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div
+                  class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg mb-3"
+                >
+                  2
+                </div>
+                <h4 class="font-medium text-gray-700 mb-2">AI Analysis</h4>
+                <p class="text-sm text-gray-600">
+                  Our deep learning model analyzes the scan to detect potential
+                  tumor regions with high precision.
+                </p>
+              </div>
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div
+                  class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg mb-3"
+                >
+                  3
+                </div>
+                <h4 class="font-medium text-gray-700 mb-2">View Results</h4>
+                <p class="text-sm text-gray-600">
+                  Review the detailed analysis results, including tumor
+                  detection confidence, location, and characteristics.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 border-t border-gray-200">
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="flex items-center mb-4 md:mb-0">
+            <div
+              class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center mr-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                />
+              </svg>
+            </div>
+            <span class="text-sm font-medium text-gray-700"
+              >Brain Tumor Detection</span
+            >
+          </div>
+          <div class="text-sm text-gray-500">
+            &copy; 2023 Brain Tumor Detection Project. All rights reserved.
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // DOM Elements
+      const fileUpload = document.getElementById("file-upload");
+      const uploadArea = document.getElementById("upload-area");
+      const previewSection = document.getElementById("preview-section");
+      const imagePreview = document.getElementById("image-preview");
+      const cancelBtn = document.getElementById("cancel-btn");
+      const analyzeBtn = document.getElementById("analyze-btn");
+      const initialState = document.getElementById("initial-state");
+      const loadingState = document.getElementById("loading-state");
+      const resultsState = document.getElementById("results-state");
+      const originalScan = document.getElementById("original-scan");
+      const analyzedScan = document.getElementById("analyzed-scan");
+      const confidenceValue = document.getElementById("confidence-value");
+      const confidenceText = document.getElementById("confidence-text");
+      const confidenceBar = document.getElementById("confidence-bar");
+      const riskLevel = document.getElementById("risk-level");
+      const riskDescription = document.getElementById("risk-description");
+      const tumorLocation = document.getElementById("tumor-location");
+      const tumorSize = document.getElementById("tumor-size");
+      const tumorType = document.getElementById("tumor-type");
+      const tumorMargins = document.getElementById("tumor-margins");
+
+      // Handle file upload
+      fileUpload.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            imagePreview.src = event.target.result;
+            originalScan.src = event.target.result;
+            analyzedScan.src = event.target.result;
+            previewSection.classList.remove("hidden");
+            uploadArea.classList.add("hidden");
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Handle drag and drop
+      uploadArea.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        uploadArea.classList.add(
+          "border-blue-500",
+          "bg-blue-50",
+          "bg-opacity-10"
+        );
+      });
+
+      uploadArea.addEventListener("dragleave", function () {
+        uploadArea.classList.remove(
+          "border-blue-500",
+          "bg-blue-50",
+          "bg-opacity-10"
+        );
+      });
+
+      uploadArea.addEventListener("drop", function (e) {
+        e.preventDefault();
+        uploadArea.classList.remove(
+          "border-blue-500",
+          "bg-blue-50",
+          "bg-opacity-10"
+        );
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+          fileUpload.files = e.dataTransfer.files;
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            imagePreview.src = event.target.result;
+            originalScan.src = event.target.result;
+            analyzedScan.src = event.target.result;
+            previewSection.classList.remove("hidden");
+            uploadArea.classList.add("hidden");
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Handle cancel button
+      cancelBtn.addEventListener("click", function () {
+        previewSection.classList.add("hidden");
+        uploadArea.classList.remove("hidden");
+        fileUpload.value = "";
+      });
+
+      // Handle analyze button
+      analyzeBtn.addEventListener("click", function () {
+        // Show loading state
+        initialState.classList.add("hidden");
+        loadingState.classList.remove("hidden");
+        resultsState.classList.add("hidden");
+
+        setTimeout(function () {
+          // Generate random results
+          const confidence = Math.floor(Math.random() * 100);
+
+          // Update UI with random results
+          confidenceValue.textContent = confidence + "% Confidence";
+          confidenceText.textContent = confidence + "%";
+          confidenceBar.style.width = confidence + "%";
+
+          // Set risk level based on confidence
+          let risk, riskColor, riskText;
+          if (confidence < 30) {
+            risk = "Low";
+            riskColor = "text-green-600";
+            riskText =
+              "The scan shows low probability of a tumor. Regular follow-up is recommended as a precautionary measure.";
+          } else if (confidence < 70) {
+            risk = "Moderate";
+            riskColor = "text-amber-600";
+            riskText =
+              "The scan shows moderate probability of a tumor. Further examination by a specialist is strongly recommended.";
+          } else {
+            risk = "High";
+            riskColor = "text-red-600";
+            riskText =
+              "The scan shows high probability of a tumor. Immediate consultation with a medical professional is advised.";
+          }
+
+          riskLevel.textContent = risk;
+          riskLevel.className = "font-bold " + riskColor;
+          riskDescription.textContent = riskText;
+
+          // Show results
+          loadingState.classList.add("hidden");
+          resultsState.classList.remove("hidden");
+        }, 2000); // Simulate 2 second processing time
+      });
+
+      // Click on upload area to trigger file input
+      uploadArea.addEventListener("click", function () {
+        fileUpload.click();
+      });
+    </script>
+  </body>
+</html>
