@@ -1,0 +1,6 @@
+Save as requirements.txt=========
+pip freeze > requirements.txt
+
+Install from requirements.txt===========
+pip install -r requirements.txt
+
